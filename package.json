@@ -24,6 +24,7 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
+    "dayjs": "^1.11.10",
     "fast-glob": "^3.3.2",
     "fs-extra": "^11.2.0",
     "meow": "^13.2.0",

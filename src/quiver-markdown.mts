@@ -1,6 +1,7 @@
 import fg from 'fast-glob'
 import fs from 'fs-extra'
 import path from 'path'
+import dayjs from "dayjs"
 import TurndownService from './transform/turndown-service.mjs'
 
 
@@ -52,8 +53,9 @@ export function convertNotebook (notebook: string, outputPath: string) {
 }
 
 const formatTime = (timestamp: number) => {
-  const date = new Date(timestamp)
-  return date.toLocaleString()
+
+  return dayjs(timestamp)
+    .format('YYYY-MM-DD(ddd) HH:mm:ss');
 }
 
 function processMarkdownImage (markdown: string) {
