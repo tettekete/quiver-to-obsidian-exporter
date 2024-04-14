@@ -131,3 +131,5 @@ dist
 
 output/*
 !output/.gitkeep
+
+testdata/*
