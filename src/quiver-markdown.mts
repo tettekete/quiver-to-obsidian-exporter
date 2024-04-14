@@ -1,8 +1,8 @@
 import fg from 'fast-glob'
 import fs from 'fs-extra'
 import path from 'path'
-import dayjs from "dayjs"
 import TurndownService from './transform/turndown-service.mjs'
+import { formatTime } from './transform/formatter.mjs'
 
 
 export function convert (qvlibrary: string, outputPath: string) {
@@ -50,12 +50,6 @@ export function convertNotebook (notebook: string, outputPath: string) {
       console.error(`Invalid file name ${fileName}`)
     }
   }
-}
-
-const formatTime = (timestamp: number) => {
-
-  return dayjs(timestamp)
-    .format('YYYY-MM-DD(ddd) HH:mm:ss');
 }
 
 function processMarkdownImage (markdown: string) {
