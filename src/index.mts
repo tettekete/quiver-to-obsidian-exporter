@@ -16,7 +16,7 @@ const cli = meow(`
   flags: {
     output: {
       type: 'string',
-      alias: 'o',
+      shortFlag: 'o',
     },
   },
 });
