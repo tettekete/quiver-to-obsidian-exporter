@@ -3,6 +3,7 @@ import fs from 'fs-extra'
 import path from 'path'
 import TurndownService from './transform/turndown-service.mjs'
 import { formatTime } from './transform/formatter.mjs'
+import { processMarkdownImage } from './transform/image-link-transform.mjs'
 
 
 export function convert (qvlibrary: string, outputPath: string) {
@@ -50,16 +51,6 @@ export function convertNotebook (notebook: string, outputPath: string) {
       console.error(`Invalid file name ${fileName}`)
     }
   }
-}
-
-function processMarkdownImage (markdown: string) {
-  return markdown.replaceAll(/(?:__|[*#])|\[(.*?)\]\((.*?)\)/g, (match, p1, p2) => {
-    if (p2?.startsWith('quiver-image-url/')) {
-      return `[[${p2.replace('quiver-image-url/', '')}]]`
-    } else {
-      return match
-    }
-  })
 }
 
 export function convertNoteToMarkdown (note: string): { title: string, content: string } {
