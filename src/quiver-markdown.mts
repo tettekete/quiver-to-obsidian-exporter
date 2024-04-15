@@ -30,7 +30,7 @@ export function convertNotebook (notebook: string, outputPath: string) {
   fs.ensureDirSync(notebookResourcePath)
   
   for (const note of notes) {
-    const { title, content } = convertNoteToMarkdown(note)
+    const { title, content } = transformQuiverNoteToObsidian(note)
 
     const fileName = path.join(notebookOutputPath, `${title}.md`)
     try {
@@ -53,7 +53,7 @@ export function convertNotebook (notebook: string, outputPath: string) {
   }
 }
 
-export function convertNoteToMarkdown (note: string): { title: string, content: string } {
+export function transformQuiverNoteToObsidian (note: string): { title: string, content: string } {
   const meta = JSON.parse(fs.readFileSync(path.join(note, 'meta.json'), 'utf8'))
   const content = JSON.parse(fs.readFileSync(path.join(note, 'content.json'), 'utf8'))
 
