@@ -41,21 +41,28 @@ function outputNoteAndCopyResources(notebookOutputPath: string, title: string, c
 
   try {
     fs.writeFileSync(fileName, content)
-
-    const notebookResourceDir = path.join(note, 'resources')
-
-    if (fs.pathExistsSync(notebookResourceDir)) {
-      // copy every file under resources to notebook resource dir
-      const files = fg.sync(path.join(notebookResourceDir, '**/*'))
-      for (const file of files) {
-        const fileName = path.basename(file)
-        const dest = path.join(notebookResourcePath, fileName)
-        fs.copySync(file, dest)
-      }
-    }
+    copyResources(note, notebookResourcePath)
   }
   catch (e) {
     console.error(e)
     console.error(`Invalid file name ${fileName}`)
   }
 }
+
+function copyResources(note: string, notebookResourcePath: string) {
+
+  const notebookResourceDir = path.join(note, 'resources')
+
+  if (fs.pathExistsSync(notebookResourceDir)) {
+
+    // copy every file under resources to notebook resource dir
+    const files = fg.sync(path.join(notebookResourceDir, '**/*'))
+
+    for (const file of files) {
+      const fileName = path.basename(file)
+      const dest = path.join(notebookResourcePath, fileName)
+      fs.copySync(file, dest)
+    }
+  }
+}
+
