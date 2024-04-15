@@ -8,20 +8,20 @@ import { transformQuiverNoteToObsidian } from './quiver-to-obsidian-transform.mj
 export function exportQvlibrary(qvlibrary: string, outputPath: string) {
 
   const glob = path.join(qvlibrary, '*.qvnotebook')
-  const noteBooks = fg.sync(glob, { onlyDirectories: true })
+  const quiverNoteBooks = fg.sync(glob, { onlyDirectories: true })
 
 
-  for (const notebook of noteBooks) {
-    convertNotebook(notebook, outputPath)
+  for (const quiverNotebook of quiverNoteBooks) {
+    convertNotebook(quiverNotebook, outputPath)
   }
 }
 
 
-export function convertNotebook (notebook: string, outputPath: string) {
+export function convertNotebook(quiverNotebook: string, outputPath: string) {
 
-  const notebookMeta = JSON.parse(fs.readFileSync(path.join(notebook, 'meta.json'), 'utf8'))
+  const notebookMeta = JSON.parse(fs.readFileSync(path.join(quiverNotebook, 'meta.json'), 'utf8'))
 
-  const glob = path.join(notebook, '*.qvnote')
+  const glob = path.join(quiverNotebook, '*.qvnote')
   const quiverNotePaths = fg.sync(glob, { onlyDirectories: true })
 
   const obsidianNoteDirPath = path.join(outputPath, notebookMeta.name)
