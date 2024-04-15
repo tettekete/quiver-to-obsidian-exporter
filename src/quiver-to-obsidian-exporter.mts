@@ -53,16 +53,17 @@ function copyResources(note: string, notebookResourcePath: string) {
 
   const notebookResourceDir = path.join(note, 'resources')
 
-  if (fs.pathExistsSync(notebookResourceDir)) {
+  if (!fs.pathExistsSync(notebookResourceDir)) {
+    return
+  }
 
-    // copy every file under resources to notebook resource dir
-    const files = fg.sync(path.join(notebookResourceDir, '**/*'))
+  // copy every file under resources to notebook resource dir
+  const files = fg.sync(path.join(notebookResourceDir, '**/*'))
 
-    for (const file of files) {
-      const fileName = path.basename(file)
-      const dest = path.join(notebookResourcePath, fileName)
-      fs.copySync(file, dest)
-    }
+  for (const file of files) {
+    const fileName = path.basename(file)
+    const dest = path.join(notebookResourcePath, fileName)
+    fs.copySync(file, dest)
   }
 }
 
