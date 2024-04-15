@@ -7,14 +7,14 @@ import { transformImageLinkOnMarkdown } from './transform/image-link-transform.m
 import { sanitizeTitle } from './transform/title-sanitizer.mjs'
 
 
-export function transformQuiverNoteToObsidian(note: string): { title: string; content: string}  {
+export function transformQuiverNoteToObsidian(quiverNotePath: string): { title: string; content: string}  {
 
-  const meta = JSON.parse(fs.readFileSync(path.join(note, 'meta.json'), 'utf8'))
-  const content = JSON.parse(fs.readFileSync(path.join(note, 'content.json'), 'utf8'))
+  const quiverMeta = JSON.parse(fs.readFileSync(path.join(quiverNotePath, 'meta.json'), 'utf8'))
+  const quiverContent = JSON.parse(fs.readFileSync(path.join(quiverNotePath, 'content.json'), 'utf8'))
 
-  const tags = meta.tags.length > 0 ? meta.tags.map(t => `#${t}`).join(' ') + '\n\n' : ''
+  const tags = quiverMeta.tags.length > 0 ? quiverMeta.tags.map(t => `#${t}`).join(' ') + '\n\n' : ''
 
-  const cellsToMarkdown = content.cells.map(cell => {
+  const cellsToMarkdown = quiverContent.cells.map(cell => {
     switch (cell.type) {
       case 'text':
         return TurndownService.turndown(cell.data)
@@ -32,11 +32,11 @@ export function transformQuiverNoteToObsidian(note: string): { title: string; co
   }).join('\n\n')
 
   return {
-    title: sanitizeTitle(meta.title),
+    title: sanitizeTitle(quiverMeta.title),
     content: `${tags}${cellsToMarkdown}
 
-    Created At: ${formatTime(meta.created_at * 1000)}
-    Updated At: ${formatTime(meta.updated_at * 1000)}
+    Created At: ${formatTime(quiverMeta.created_at * 1000)}
+    Updated At: ${formatTime(quiverMeta.updated_at * 1000)}
   `
   }
 }
