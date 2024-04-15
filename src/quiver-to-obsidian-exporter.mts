@@ -29,11 +29,11 @@ export function convertNotebook (notebook: string, outputPath: string) {
 
   for (const quiverNotePath of quiverNotePaths) {
     const { title, content } = transformQuiverNoteToObsidian(quiverNotePath)
-    outputNoteAndCopyResources(obsidianNoteDirPath, title, content, quiverNotePath, obsidianAttachmentFolderPath)
+    outputNoteAndCopyResources(quiverNotePath, obsidianNoteDirPath, title, content, obsidianAttachmentFolderPath)
   }
 }
 
-function outputNoteAndCopyResources(obsidianNoteDirPath: string, title: string, content: string, quiverNotePath: string, obsidianAttachmentFolderPath: string) {
+function outputNoteAndCopyResources(quiverNotePath: string, obsidianNoteDirPath: string, title: string, content: string, obsidianAttachmentFolderPath: string) {
 
   fs.ensureDirSync(obsidianNoteDirPath)
   fs.ensureDirSync(obsidianAttachmentFolderPath)
