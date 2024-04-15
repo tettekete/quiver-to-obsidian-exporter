@@ -39,4 +39,4 @@ assertValidQvlibraryPath(qvlibraryPath);
 
 const outputPath = cli.flags.output
 
-exportQvlibrary(qvlibraryPath, outputPath, { isVerbose: true });
+exportQvlibrary(qvlibraryPath, outputPath);

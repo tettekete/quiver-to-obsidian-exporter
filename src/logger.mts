@@ -1,18 +1,35 @@
+import { parseBoolean } from './util/environment-variable-parser.mjs'
 
 
-export type LogConfig = {
+const isVerbose = parseBoolean(process.env.QUIVER_TO_OBSIDIAN_EXPORTER_LOGGING_VERBOSE);
+
+
+type LogConfig = {
   isVerbose: boolean;
+  toString(): string;
+};
+
+const logConfig: LogConfig = {
+  isVerbose: isVerbose,
+  toString: function() {
+    return `LogConfig: { isVerbose: ${this.isVerbose} }`;
+  }
 };
 
 
-export const createLogger = (config: LogConfig) => {
+const createLogger = (config: LogConfig) => {
+
+  console.log(`LogConfig=${config.toString()}`)
+
   return {
 
-    info: (message: string) => console.log(message),
+    error: (message: string) => console.error(message),
+
+    info: (message: string) => console.info(message),
 
     debug: (message: string) => {
       if (!config.isVerbose) return;
-      console.log(message)
+      console.debug(message)
     },
 
     debugNotebookPathsByUUID: (notebookPathsByUUID: Map<string, string>) => {
@@ -21,8 +38,8 @@ export const createLogger = (config: LogConfig) => {
     },
 
     completed: () => {
-      console.log('')
-      console.log("🎉 the export of the Quiver library to the Obsidian Vault has been completed successfully.")
+      console.info('')
+      console.info("🎉 the export of the Quiver library to the Obsidian Vault has been completed successfully.")
     },
   };
 };
@@ -30,8 +47,16 @@ export const createLogger = (config: LogConfig) => {
 
 const debugNotebookPathsByUUID = (notebookPathsByUUID: Map<string, string>) => {
 
-  console.log(`==== contents of notebookPathsByUUID ====`);
+  console.debug(`==== contents of notebookPathsByUUID ====`);
   notebookPathsByUUID.forEach((value, key) => {
-    console.log(`Key: ${key}, Value: ${value}`);
+    console.debug(`Key: ${key}, Value: ${value}`);
   });
 }
+
+
+let loggerInstance = createLogger(logConfig);
+
+export const getLogger = () => {
+  return loggerInstance;
+};
+
