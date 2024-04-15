@@ -3,7 +3,7 @@ import fs from 'fs-extra'
 import path from 'path'
 import TurndownService from './transform/turndown-service.mjs'
 import { formatTime } from './transform/formatter.mjs'
-import { processMarkdownImage } from './transform/image-link-transform.mjs'
+import { transformImageLinkOnMarkdown } from './transform/image-link-transform.mjs'
 
 
 export function convert (qvlibrary: string, outputPath: string) {
@@ -66,7 +66,7 @@ export function convertNoteToMarkdown (note: string): { title: string, content: 
       case 'code':
         return `\`\`\`${cell.language}\n${cell.data}\n\`\`\``
       case 'markdown':
-        return processMarkdownImage(cell.data)
+        return transformImageLinkOnMarkdown(cell.data)
       case 'diagram':
         return `\`\`\`${cell.diagramType}\n${cell.data}\n\`\`\``
       case 'latex':
