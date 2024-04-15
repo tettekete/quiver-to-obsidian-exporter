@@ -26,29 +26,36 @@ export function convertNotebook (notebook: string, outputPath: string) {
   const notebookOutputPath = path.join(outputPath, notebookMeta.name)
   const notebookResourcePath = path.join(notebookOutputPath, `./_resources`)
 
+  for (const note of notes) {
+    const { title, content } = transformQuiverNoteToObsidian(note)
+    outputNoteAndCopyResources(notebookOutputPath, title, content, note, notebookResourcePath)
+  }
+}
+
+function outputNoteAndCopyResources(notebookOutputPath: string, title: string, content: string, note: string, notebookResourcePath: string) {
+
   fs.ensureDirSync(notebookOutputPath)
   fs.ensureDirSync(notebookResourcePath)
   
-  for (const note of notes) {
-    const { title, content } = transformQuiverNoteToObsidian(note)
+  const fileName = path.join(notebookOutputPath, `${title}.md`)
 
-    const fileName = path.join(notebookOutputPath, `${title}.md`)
-    try {
-      fs.writeFileSync(fileName, content)
-  
-      const notebookResourceDir = path.join(note, 'resources')
-      if (fs.pathExistsSync(notebookResourceDir)) {
-        // copy every file under resources to notebook resource dir
-        const files = fg.sync(path.join(notebookResourceDir, '**/*'))
-        for (const file of files) {
-          const fileName = path.basename(file)
-          const dest = path.join(notebookResourcePath, fileName)
-          fs.copySync(file, dest)
-        }
+  try {
+    fs.writeFileSync(fileName, content)
+
+    const notebookResourceDir = path.join(note, 'resources')
+
+    if (fs.pathExistsSync(notebookResourceDir)) {
+      // copy every file under resources to notebook resource dir
+      const files = fg.sync(path.join(notebookResourceDir, '**/*'))
+      for (const file of files) {
+        const fileName = path.basename(file)
+        const dest = path.join(notebookResourcePath, fileName)
+        fs.copySync(file, dest)
       }
-    } catch (e) {
-      console.error(e)
-      console.error(`Invalid file name ${fileName}`)
     }
+  }
+  catch (e) {
+    console.error(e)
+    console.error(`Invalid file name ${fileName}`)
   }
 }
