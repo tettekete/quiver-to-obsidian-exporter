@@ -1,5 +1,5 @@
 import fs from "fs-extra";
-import path from "path";
+import pathModule from "path";
 
 import TurndownService from "./transform/turndown-service.mjs";
 import { formatTimestamp } from './transform/formatter.mjs';
@@ -9,8 +9,8 @@ import { sanitizeTitle } from './transform/title-sanitizer.mjs'
 
 export function transformQuiverNoteToObsidian(quiverNotePath: string): { title: string; content: string}  {
 
-  const quiverMeta = JSON.parse(fs.readFileSync(path.join(quiverNotePath, 'meta.json'), 'utf8'))
-  const quiverContent = JSON.parse(fs.readFileSync(path.join(quiverNotePath, 'content.json'), 'utf8'))
+  const quiverMeta = JSON.parse(fs.readFileSync(pathModule.join(quiverNotePath, 'meta.json'), 'utf8'))
+  const quiverContent = JSON.parse(fs.readFileSync(pathModule.join(quiverNotePath, 'content.json'), 'utf8'))
 
   const transformedContent = quiverContent.cells.map(cell => {
     switch (cell.type) {
