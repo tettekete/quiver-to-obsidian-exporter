@@ -2,14 +2,25 @@ import fg from 'fast-glob'
 import fs from 'fs-extra'
 import pathModule from 'path'
 
+import './extensions/String+Path.mjs';
 import { transformQuiverNoteToObsidian } from './quiver-to-obsidian-transform.mjs'
+import { LogConfig, createLogger } from './logger.mjs'
 
 
-export function exportQvlibrary(qvlibrary: string, outputPath: string) {
+export function exportQvlibrary(qvlibrary: string, outputPath: string, logConfig: LogConfig) {
+  
+  const logger = createLogger(logConfig);
 
   const glob = pathModule.join(qvlibrary, '*.qvnotebook')
   const quiverNoteBooks = fg.sync(glob, { onlyDirectories: true })
 
+  const notebookPathsByUUID = quiverNoteBooks.reduce((acc: Map<string, string>, path: string): Map<string, string> => {
+    const fileName = path.lastPathComponent();
+    const uuid = fileName.split('.')[0];
+    return acc.set(uuid, path);
+  }, new Map<string, string>());
+
+  logger.debugNotebookPathsByUUID(notebookPathsByUUID)
 
   for (const quiverNotebook of quiverNoteBooks) {
     convertNotebook(quiverNotebook, outputPath)
