@@ -2,7 +2,7 @@ import fs from "fs-extra";
 import path from "path";
 
 import TurndownService from "./transform/turndown-service.mjs";
-import { formatTime } from './transform/formatter.mjs';
+import { formatTimestamp } from './transform/formatter.mjs';
 import { transformImageLinkOnMarkdown } from './transform/image-link-transform.mjs';
 import { sanitizeTitle } from './transform/title-sanitizer.mjs'
 
@@ -51,8 +51,8 @@ function makeYamlFrontMatter(tags: string, quiverMeta: any): string {
 tags:
 ${tags}
 origin: Quiver
-created-at: ${formatTime(quiverMeta.created_at * 1000)}
-updated-at: ${formatTime(quiverMeta.updated_at * 1000)}
+created-at: ${formatTimestamp(quiverMeta.created_at * 1000)}
+updated-at: ${formatTimestamp(quiverMeta.updated_at * 1000)}
 ---
 `;
 }
