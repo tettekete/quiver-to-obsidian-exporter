@@ -5,6 +5,7 @@ import pathModule from 'path'
 import { getLogger } from './logger.mjs';
 import './extensions/String+Path.mjs';
 import { transformQuiverNoteToObsidian } from './quiver-to-obsidian-transform.mjs'
+import { cloneTimestamp } from './migration-support/file-timestamp-cloner.mjs';
 
 
 const logger = getLogger();
@@ -81,12 +82,12 @@ export function convertNotebook(quiverNotebook: string, outputPath: string, path
   const obsidianAttachmentFolderPath = pathModule.join(obsidianNoteDirPath, `./_resources`)
 
   for (const quiverNotePath of quiverNotePaths) {
-    const { title, content } = transformQuiverNoteToObsidian(quiverNotePath)
-    outputNoteAndCopyResources(quiverNotePath, obsidianNoteDirPath, title, content, obsidianAttachmentFolderPath)
+    const { title, content, quiverMeta } = transformQuiverNoteToObsidian(quiverNotePath)
+    outputNoteAndCopyResources(quiverNotePath, quiverMeta, obsidianNoteDirPath, title, content, obsidianAttachmentFolderPath)
   }
 }
 
-function outputNoteAndCopyResources(quiverNotePath: string, obsidianNoteDirPath: string, title: string, content: string, obsidianAttachmentFolderPath: string) {
+function outputNoteAndCopyResources(quiverNotePath: string, quiverMeta: any, obsidianNoteDirPath: string, title: string, content: string, obsidianAttachmentFolderPath: string) {
 
   fs.ensureDirSync(obsidianNoteDirPath)
   fs.ensureDirSync(obsidianAttachmentFolderPath)
@@ -101,6 +102,8 @@ function outputNoteAndCopyResources(quiverNotePath: string, obsidianNoteDirPath:
     console.error(e)
     console.error(`Invalid file name ${destFilePath}`)
   }
+
+  cloneTimestamp(destFilePath, quiverMeta);
 }
 
 function copyResources(quiverNotePath: string, obsidianAttachmentFolderPath: string) {

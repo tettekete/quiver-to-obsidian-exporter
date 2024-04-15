@@ -7,7 +7,7 @@ import { transformImageLinkOnMarkdown } from './transform/image-link-transform.m
 import { sanitizeTitle } from './transform/title-sanitizer.mjs'
 
 
-export function transformQuiverNoteToObsidian(quiverNotePath: string): { title: string; content: string}  {
+export function transformQuiverNoteToObsidian(quiverNotePath: string): { title: string; content: string; quiverMeta: any; }  {
 
   const quiverMeta = JSON.parse(fs.readFileSync(pathModule.join(quiverNotePath, 'meta.json'), 'utf8'))
   const quiverContent = JSON.parse(fs.readFileSync(pathModule.join(quiverNotePath, 'content.json'), 'utf8'))
@@ -32,6 +32,7 @@ export function transformQuiverNoteToObsidian(quiverNotePath: string): { title: 
   return {
     title: sanitizeTitle(quiverMeta.title),
     content: makeObsidianContent(quiverMeta, transformedContent),
+    quiverMeta: quiverMeta,
   }
 }
 
