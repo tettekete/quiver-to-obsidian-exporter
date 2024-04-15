@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import meow from 'meow';
 
-import { convert } from './quiver-to-obsidian-exporter.mjs';
+import { exportQvlibrary } from './quiver-to-obsidian-exporter.mjs';
 
 
 const cli = meow(`
@@ -33,4 +33,4 @@ if (!cli.flags.output) {
   process.exit(1);
 }
 
-convert(cli.input[0], cli.flags.output);
+exportQvlibrary(cli.input[0], cli.flags.output);

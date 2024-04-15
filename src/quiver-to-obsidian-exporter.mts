@@ -5,7 +5,8 @@ import path from 'path'
 import { transformQuiverNoteToObsidian } from './quiver-to-obsidian-transform.mjs'
 
 
-export function convert (qvlibrary: string, outputPath: string) {
+export function exportQvlibrary(qvlibrary: string, outputPath: string) {
+
   const glob = path.join(qvlibrary, '*.qvnotebook')
   const noteBooks = fg.sync(glob, { onlyDirectories: true })
 
