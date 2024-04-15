@@ -18,40 +18,41 @@ export function exportQvlibrary(qvlibrary: string, outputPath: string) {
 
 
 export function convertNotebook (notebook: string, outputPath: string) {
+
   const notebookMeta = JSON.parse(fs.readFileSync(path.join(notebook, 'meta.json'), 'utf8'))
 
   const glob = path.join(notebook, '*.qvnote')
-  const notes = fg.sync(glob, { onlyDirectories: true })
+  const quiverNotePaths = fg.sync(glob, { onlyDirectories: true })
 
-  const notebookOutputPath = path.join(outputPath, notebookMeta.name)
-  const notebookResourcePath = path.join(notebookOutputPath, `./_resources`)
+  const obsidianNoteDirPath = path.join(outputPath, notebookMeta.name)
+  const obsidianAttachmentFolderPath = path.join(obsidianNoteDirPath, `./_resources`)
 
-  for (const note of notes) {
-    const { title, content } = transformQuiverNoteToObsidian(note)
-    outputNoteAndCopyResources(notebookOutputPath, title, content, note, notebookResourcePath)
+  for (const quiverNotePath of quiverNotePaths) {
+    const { title, content } = transformQuiverNoteToObsidian(quiverNotePath)
+    outputNoteAndCopyResources(obsidianNoteDirPath, title, content, quiverNotePath, obsidianAttachmentFolderPath)
   }
 }
 
-function outputNoteAndCopyResources(notebookOutputPath: string, title: string, content: string, note: string, notebookResourcePath: string) {
+function outputNoteAndCopyResources(obsidianNoteDirPath: string, title: string, content: string, quiverNotePath: string, obsidianAttachmentFolderPath: string) {
 
-  fs.ensureDirSync(notebookOutputPath)
-  fs.ensureDirSync(notebookResourcePath)
+  fs.ensureDirSync(obsidianNoteDirPath)
+  fs.ensureDirSync(obsidianAttachmentFolderPath)
   
-  const fileName = path.join(notebookOutputPath, `${title}.md`)
+  const destFilePath = path.join(obsidianNoteDirPath, `${title}.md`)
 
   try {
-    fs.writeFileSync(fileName, content)
-    copyResources(note, notebookResourcePath)
+    fs.writeFileSync(destFilePath, content)
+    copyResources(quiverNotePath, obsidianAttachmentFolderPath)
   }
   catch (e) {
     console.error(e)
-    console.error(`Invalid file name ${fileName}`)
+    console.error(`Invalid file name ${destFilePath}`)
   }
 }
 
-function copyResources(note: string, notebookResourcePath: string) {
+function copyResources(quiverNotePath: string, obsidianAttachmentFolderPath: string) {
 
-  const notebookResourceDir = path.join(note, 'resources')
+  const notebookResourceDir = path.join(quiverNotePath, 'resources')
 
   if (!fs.pathExistsSync(notebookResourceDir)) {
     return
@@ -62,7 +63,7 @@ function copyResources(note: string, notebookResourcePath: string) {
 
   for (const file of files) {
     const fileName = path.basename(file)
-    const dest = path.join(notebookResourcePath, fileName)
+    const dest = path.join(obsidianAttachmentFolderPath, fileName)
     fs.copySync(file, dest)
   }
 }
