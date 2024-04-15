@@ -77,8 +77,6 @@ function traverseFolderTree(children: [], depth: number, pathStack: string[], ou
 
 export function convertNotebook(quiverNotebook: string, outputPath: string, pathStack: string[]) {
 
-  const notebookMeta = JSON.parse(fs.readFileSync(pathModule.join(quiverNotebook, 'meta.json'), 'utf8'))
-
   const glob = pathModule.join(quiverNotebook, '*.qvnote')
   const quiverNotePaths = fg.sync(glob, { onlyDirectories: true })
 
