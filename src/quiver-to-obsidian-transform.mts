@@ -12,9 +12,7 @@ export function transformQuiverNoteToObsidian(quiverNotePath: string): { title: 
   const quiverMeta = JSON.parse(fs.readFileSync(path.join(quiverNotePath, 'meta.json'), 'utf8'))
   const quiverContent = JSON.parse(fs.readFileSync(path.join(quiverNotePath, 'content.json'), 'utf8'))
 
-  const tags = quiverMeta.tags.length > 0 ? quiverMeta.tags.map(t => `#${t}`).join(' ') + '\n\n' : ''
-
-  const cellsToMarkdown = quiverContent.cells.map(cell => {
+  const transformedContent = quiverContent.cells.map(cell => {
     switch (cell.type) {
       case 'text':
         return TurndownService.turndown(cell.data)
@@ -33,10 +31,28 @@ export function transformQuiverNoteToObsidian(quiverNotePath: string): { title: 
 
   return {
     title: sanitizeTitle(quiverMeta.title),
-    content: `${tags}${cellsToMarkdown}
-
-    Created At: ${formatTime(quiverMeta.created_at * 1000)}
-    Updated At: ${formatTime(quiverMeta.updated_at * 1000)}
-  `
+    content: makeObsidianContent(quiverMeta, transformedContent),
   }
+}
+
+function makeObsidianContent(quiverMeta: any, transformedContent: any): string {
+
+  const tags = quiverMeta.tags.length > 0 ? quiverMeta.tags.map((tag: string) => `  - ${tag}`).join('\n') : '';
+
+  return `${makeYamlFrontMatter(tags, quiverMeta)}
+
+${transformedContent}
+`;
+}
+
+function makeYamlFrontMatter(tags: string, quiverMeta: any): string {
+
+  return `---
+tags:
+${tags}
+origin: Quiver
+created-at: ${formatTime(quiverMeta.created_at * 1000)}
+updated-at: ${formatTime(quiverMeta.updated_at * 1000)}
+---
+`;
 }
