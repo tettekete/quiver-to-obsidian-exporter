@@ -4,6 +4,7 @@ import path from "path";
 import TurndownService from "./transform/turndown-service.mjs";
 import { formatTime } from './transform/formatter.mjs';
 import { transformImageLinkOnMarkdown } from './transform/image-link-transform.mjs';
+import { sanitizeTitle } from './transform/title-sanitizer.mjs'
 
 
 export function transformQuiverNoteToObsidian(note: string): { title: string; content: string}  {
@@ -31,7 +32,7 @@ export function transformQuiverNoteToObsidian(note: string): { title: string; co
   }).join('\n\n')
 
   return {
-    title: meta.title,
+    title: sanitizeTitle(meta.title),
     content: `${tags}${cellsToMarkdown}
 
     Created At: ${formatTime(meta.created_at * 1000)}
