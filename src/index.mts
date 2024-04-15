@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import meow from 'meow';
 
+import { assertValidQvlibraryPath } from './assertions.mjs';
 import { exportQvlibrary } from './quiver-to-obsidian-exporter.mjs';
 
 
@@ -33,4 +34,9 @@ if (!cli.flags.output) {
   process.exit(1);
 }
 
-exportQvlibrary(cli.input[0], cli.flags.output);
+const qvlibraryPath = cli.input[0]
+assertValidQvlibraryPath(qvlibraryPath);
+
+const outputPath = cli.flags.output
+
+exportQvlibrary(qvlibraryPath, outputPath);
