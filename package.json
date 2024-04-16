@@ -10,6 +10,9 @@
   "bin": {
     "quiver-markdown": "dist/index.mjs"
   },
+  "engines": {
+    "node": ">=21.7.3"
+  },
   "scripts": {
     "build": "rm -rf ./dist && tsc",
     "prepublishOnly": "npm run build"
