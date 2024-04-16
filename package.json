@@ -2,6 +2,11 @@
   "name": "quiver-to-obsidian-exporter",
   "version": "1.1.0",
   "description": "Export Quiver library to Obsidian markdown files",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blue-monk/quiver-to-obsidian-exporter"
+  },
+  "homepage": "https://github.com/blue-monk/quiver-to-obsidian-exporter",
   "main": "dist/index.mjs",
   "files": [
     "dist"
