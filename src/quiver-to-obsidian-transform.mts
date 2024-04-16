@@ -23,7 +23,7 @@ export function transformQuiverNoteToObsidian(quiverNotePath: string): { title: 
       case 'diagram':
         return `\`\`\`${cell.diagramType}\n${cell.data}\n\`\`\``
       case 'latex':
-        return `$$\n${cell.data}\n$$`
+        return `${cell.data}`
       default:
         throw new Error(`Unknown cell type: ${cell.type}`)
     }
