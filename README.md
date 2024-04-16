@@ -71,6 +71,9 @@ Examples
 
 ## How to Test (For Developers)
 
+This testing procedure is designed for testing in a clean environment.
+For routine testing, feel free to use your IDE of choice.
+
 1. Prepare the `testdata` folder:
     In the testdata folder, place xxx.qvlibrary in the sources directory, for example, and also provide a destination folder, etc. and use it as the location for the -o option (-o testdata/destination/MyNote)
 2. `yarn run build`.
