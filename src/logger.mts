@@ -19,7 +19,9 @@ const logConfig: LogConfig = {
 
 const createLogger = (config: LogConfig) => {
 
-  console.log(`LogConfig=${config.toString()}`)
+  if (config.isVerbose) {
+    console.log(`LogConfig=${config.toString()}`)
+  }
 
   return {
 
