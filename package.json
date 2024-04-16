@@ -13,7 +13,7 @@
   ],
   "type": "module",
   "bin": {
-    "quiver-markdown": "dist/index.mjs"
+    "qvr2obs": "dist/index.mjs"
   },
   "engines": {
     "node": ">=21.7.3"

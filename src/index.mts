@@ -12,9 +12,9 @@ const logger = getLogger();
 
 const helpText = `
 Usage
-  $ quiver-markdown <input.qvlibrary> -o <output folder>  -a <Attachment folder policy>
+  $ qvr2obs <input.qvlibrary> -o <output folder>  -a <Attachment folder policy>
   or
-  $ quiver-markdown <input.qvlibrary> -o <output folder>  -a <Attachment folder policy> -n <Attachment subfolder name if needed>
+  $ qvr2obs <input.qvlibrary> -o <output folder>  -a <Attachment folder policy> -n <Attachment subfolder name if needed>
 
 Options
   --output, -o: Output folder
@@ -22,8 +22,8 @@ Options
   --attachmentSubfolderName, -n: Specify the subfolder name if 'subfolderUnderVault' or 'subfolderUnderEachFolder' is selected as the attachmentFolderPolicy option.
 
 Examples
-  $ quiver-markdown MyLibrary.qvlibrary -o dist -a vaultFolder
-  $ quiver-markdown MyLibrary.qvlibrary -o dist -a subfolderUnderVault -n _quiver-resources
+  $ qvr2obs MyLibrary.qvlibrary -o dist -a vaultFolder
+  $ qvr2obs MyLibrary.qvlibrary -o dist -a subfolderUnderVault -n _quiver-resources
 `
 
 
