@@ -10,26 +10,35 @@ import { AttachmentFolderPolicy, createAttachmentFolderPolicyWithSubfolder, crea
 const logger = getLogger();
 
 
-const cli = meow(`
-  Usage
-    $ quiver-markdown <input.qvlibrary> -o <output folder>  -a <Attachment folder policy>
-    or
-    $ quiver-markdown <input.qvlibrary> -o <output folder>  -a <Attachment folder policy> -n <Attachment subfolder name if needed>
+const helpText = `
+Usage
+  $ quiver-markdown <input.qvlibrary> -o <output folder>  -a <Attachment folder policy>
+  or
+  $ quiver-markdown <input.qvlibrary> -o <output folder>  -a <Attachment folder policy> -n <Attachment subfolder name if needed>
 
-  Options
-    --output, -o: Output folder
-    --attachmentFolderPolicy, -a: Attachment folder policy (vaultFolder, subfolderUnderVault, sameFolderAsEachFile, subfolderUnderEachFolder). 'subfolderUnderVault' and 'subfolderUnderEachFolder' require subfolder name.
-    --attachmentSubfolderName, -n: Specify the subfolder name if 'subfolderUnderVault' or 'subfolderUnderEachFolder' is selected as the attachmentFolderPolicy option.
-  
-  Examples
-    $ quiver-markdown MyLibrary.qvlibrary -o dist -a vaultFolder
-    $ quiver-markdown MyLibrary.qvlibrary -o dist -a subfolderUnderVault -n _quiver-resources
-`, {
+Options
+  --output, -o: Output folder
+  --attachmentFolderPolicy, -a: Attachment folder policy (vaultFolder, subfolderUnderVault, sameFolderAsEachFile, subfolderUnderEachFolder). 'subfolderUnderVault' and 'subfolderUnderEachFolder' require subfolder name.
+  --attachmentSubfolderName, -n: Specify the subfolder name if 'subfolderUnderVault' or 'subfolderUnderEachFolder' is selected as the attachmentFolderPolicy option.
+
+Examples
+  $ quiver-markdown MyLibrary.qvlibrary -o dist -a vaultFolder
+  $ quiver-markdown MyLibrary.qvlibrary -o dist -a subfolderUnderVault -n _quiver-resources
+`
+
+
+const args = process.argv.slice(2)
+if (args.length === 0) {
+    meow(helpText, { importMeta: import.meta }).showHelp();
+}
+
+const cli = meow(helpText, {
   importMeta: import.meta,
   flags: {
     output: {
       type: 'string',
       shortFlag: 'o',
+      isRequired: true,
     },
     attachmentFolderPolicy: {
       type: 'string',
@@ -49,12 +58,12 @@ const cli = meow(`
 
 if (cli.input.length < 1) {
   logger.error('Please provide a qvlibrary file');
-  process.exit(1);
+  cli.showHelp();
 }
 
 if (!cli.flags.output) {
   logger.error('Please provide an output folder');
-  process.exit(1);
+  cli.showHelp();
 }
 
 if (cli.flags.attachmentFolderPolicy.startsWith('subfolder')) {
