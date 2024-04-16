@@ -22,8 +22,8 @@ Options
   --attachmentSubfolderName, -n: Specify the subfolder name if 'subfolderUnderVault' or 'subfolderUnderEachFolder' is selected as the attachmentFolderPolicy option.
 
 Examples
-  $ qvr2obs MyLibrary.qvlibrary -o dist -a vaultFolder
-  $ qvr2obs MyLibrary.qvlibrary -o dist -a subfolderUnderVault -n _quiver-resources
+  $ qvr2obs MyNote.qvlibrary -o dest/MyNote -a vaultFolder
+  $ qvr2obs MyNote.qvlibrary -o dest/MyNote -a subfolderUnderVault -n _attachment
 `
 
 
