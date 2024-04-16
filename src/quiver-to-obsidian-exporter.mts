@@ -6,6 +6,7 @@ import { getLogger } from './logger.mjs';
 import './extensions/String+Path.mjs';
 import { transformQuiverNoteToObsidian } from './quiver-to-obsidian-transform.mjs'
 import { cloneTimestamp } from './migration-support/file-timestamp-cloner.mjs';
+import { AttachmentFolderPolicy, calculateAttachmentFolderPath } from './migration-support/attachment-folder-treatment.mjs'
 
 
 const logger = getLogger();
@@ -15,7 +16,7 @@ const Keys = {
 } as const;
 
 
-export function exportQvlibrary(qvlibrary: string, outputPath: string) {
+export function exportQvlibrary(qvlibrary: string, outputPath: string, attachmentFolderPolicy: AttachmentFolderPolicy) {
 
   const glob = pathModule.join(qvlibrary, '*.qvnotebook')
   const quiverNoteBooks = fg.sync(glob, { onlyDirectories: true })
@@ -32,7 +33,7 @@ export function exportQvlibrary(qvlibrary: string, outputPath: string) {
   logger.info(`==> processing the default fixed notebooks 'Inbox' and 'Trash' in Quiver.`);
   ['Inbox', 'Trash'].forEach((fixedName: string) => {
     const notebookPath = notebookPathsByUUID.get(fixedName);
-    convertNotebook(notebookPath, outputPath, [fixedName]);
+    convertNotebook(notebookPath, outputPath, [fixedName], attachmentFolderPolicy);
   });
 
   logger.info('==> retrieving the root meta.json, which stores the tree structure.');
@@ -42,13 +43,13 @@ export function exportQvlibrary(qvlibrary: string, outputPath: string) {
 
   logger.info('==> traverse the folder tree structure to convert Quiver notebooks into Obsidian .md files.');
   const rootChildren = treeMeta[Keys.children];
-  traverseFolderTree(rootChildren, 0, [], outputPath, notebookPathsByUUID);
+  traverseFolderTree(rootChildren, 0, [], outputPath, notebookPathsByUUID, attachmentFolderPolicy);
 
   logger.info('==> Traversal of the folder tree structure has been completed.');
   logger.completed()
 }
 
-function traverseFolderTree(children: [], depth: number, pathStack: string[], outputPath: string, notebooksByUUID: Map<string, string>) {
+function traverseFolderTree(children: [], depth: number, pathStack: string[], outputPath: string, notebooksByUUID: Map<string, string>, attachmentFolderPolicy: AttachmentFolderPolicy) {
 
   logger.debug(" ".repeat(depth * 4) + 'traverseFolderTree called...');
   if (children === undefined) { return; }
@@ -67,19 +68,19 @@ function traverseFolderTree(children: [], depth: number, pathStack: string[], ou
     const notebookMeta = JSON.parse(fs.readFileSync(pathModule.join(notebookPath, 'meta.json'), 'utf8'));
 
     pathStack.push(notebookMeta.name);
-    convertNotebook(notebookPath, outputPath, pathStack);
-    traverseFolderTree(node[Keys.children], depth + 1, pathStack, outputPath, notebooksByUUID);
+    convertNotebook(notebookPath, outputPath, pathStack, attachmentFolderPolicy);
+    traverseFolderTree(node[Keys.children], depth + 1, pathStack, outputPath, notebooksByUUID, attachmentFolderPolicy);
     pathStack.pop();
   })
 }
 
-export function convertNotebook(quiverNotebook: string, outputPath: string, pathStack: string[]) {
+export function convertNotebook(quiverNotebook: string, outputPath: string, pathStack: string[], attachmentFolderPolicy: AttachmentFolderPolicy) {
 
   const glob = pathModule.join(quiverNotebook, '*.qvnote')
   const quiverNotePaths = fg.sync(glob, { onlyDirectories: true })
 
   const obsidianNoteDirPath = pathModule.join(outputPath, ...pathStack)
-  const obsidianAttachmentFolderPath = pathModule.join(obsidianNoteDirPath, `./_resources`)
+  const obsidianAttachmentFolderPath = calculateAttachmentFolderPath(outputPath, obsidianNoteDirPath, attachmentFolderPolicy)
 
   for (const quiverNotePath of quiverNotePaths) {
     const { title, content, quiverMeta } = transformQuiverNoteToObsidian(quiverNotePath)

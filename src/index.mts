@@ -1,19 +1,29 @@
 #!/usr/bin/env node
 import meow from 'meow';
 
+import { getLogger } from './logger.mjs';
 import { assertValidQvlibraryPath } from './assertions.mjs';
 import { exportQvlibrary } from './quiver-to-obsidian-exporter.mjs';
+import { AttachmentFolderPolicy, createAttachmentFolderPolicyWithSubfolder, createAttachmentFolderPolicyWithoutSubfolder } from './migration-support/attachment-folder-treatment.mjs';
+
+
+const logger = getLogger();
 
 
 const cli = meow(`
-	Usage
-	  $ quiver-markdown <input.qvlibrary> -o <output folder>
+  Usage
+    $ quiver-markdown <input.qvlibrary> -o <output folder>  -a <Attachment folder policy>
+    or
+    $ quiver-markdown <input.qvlibrary> -o <output folder>  -a <Attachment folder policy> -n <Attachment subfolder name if needed>
 
-	Options
-	  --output, -o Output folder
-
-	Examples
-	  $ quiver-markdown MyLibrary.qvlibrary -o dist
+  Options
+    --output, -o: Output folder
+    --attachmentFolderPolicy, -a: Attachment folder policy (vaultFolder, subfolderUnderVault, sameFolderAsEachFile, subfolderUnderEachFolder). 'subfolderUnderVault' and 'subfolderUnderEachFolder' require subfolder name.
+    --attachmentSubfolderName, -n: Specify the subfolder name if 'subfolderUnderVault' or 'subfolderUnderEachFolder' is selected as the attachmentFolderPolicy option.
+  
+  Examples
+    $ quiver-markdown MyLibrary.qvlibrary -o dist -a vaultFolder
+    $ quiver-markdown MyLibrary.qvlibrary -o dist -a subfolderUnderVault -n _quiver-resources
 `, {
   importMeta: import.meta,
   flags: {
@@ -21,22 +31,68 @@ const cli = meow(`
       type: 'string',
       shortFlag: 'o',
     },
+    attachmentFolderPolicy: {
+      type: 'string',
+      choices: ['vaultFolder', 'subfolderUnderVault', 'sameFolderAsEachFile', 'subfolderUnderEachFolder'],
+      shortFlag: 'a',
+      isRequired: true,
+    },
+    attachmentSubfolderName: {
+      type: 'string',
+      shortFlag: 'n',
+      isRequired: (flags, input) => {
+        return (flags.attachmentFolderPolicy as string)?.startsWith('subfolder');
+      },
+    },
   },
 });
 
 if (cli.input.length < 1) {
-  console.error('Please provide a qvlibrary file');
+  logger.error('Please provide a qvlibrary file');
   process.exit(1);
 }
 
 if (!cli.flags.output) {
-  console.error('Please provide an output folder');
+  logger.error('Please provide an output folder');
   process.exit(1);
 }
+
+if (cli.flags.attachmentFolderPolicy.startsWith('subfolder')) {
+  if (!cli.flags.attachmentSubfolderName) {
+    logger.error(`Please provide an Attachment subfolder name with -n option (Because you specified '${cli.flags.attachmentFolderPolicy}' with -i)`);
+      cli.showHelp();
+  }
+}
+else {
+  if (cli.flags.attachmentSubfolderName) {
+    logger.error(`It is not necessary to specify Attachment subfolder name (Because you specified '${cli.flags.attachmentFolderPolicy}' with -i) (or is it a mistake in specifying attachmentFolderPolicy?)`);
+      cli.showHelp();
+  }
+}
+
+
 
 const qvlibraryPath = cli.input[0]
 assertValidQvlibraryPath(qvlibraryPath);
 
 const outputPath = cli.flags.output
 
-exportQvlibrary(qvlibraryPath, outputPath);
+const attachmentFolderPolicy = createAttachmentFolderPolicy(cli.flags.attachmentFolderPolicy, cli.flags.attachmentSubfolderName)
+logger.info(`AttachmentFolderPolicy: { attachmentFolderPolicy=${cli.flags.attachmentFolderPolicy}, attachmentSubfolderName=${cli.flags.attachmentSubfolderName} }`);
+
+exportQvlibrary(qvlibraryPath, outputPath, attachmentFolderPolicy);
+
+
+function createAttachmentFolderPolicy(policyType: string, subfolderName: string): AttachmentFolderPolicy {
+
+  switch (policyType) {
+    case 'vaultFolder':
+    case 'sameFolderAsEachFile':
+      return createAttachmentFolderPolicyWithoutSubfolder(policyType);
+    case 'subfolderUnderVault':
+    case 'subfolderUnderEachFolder':
+      return createAttachmentFolderPolicyWithSubfolder(policyType, subfolderName);
+    default:
+      throw new Error(`Unknown policy type: ${policyType}`);
+  }
+}
