@@ -1,6 +1,8 @@
 import fg from 'fast-glob'
 import fs from 'fs-extra'
 import pathModule from 'path'
+import * as cliProgress from 'cli-progress'
+import chalk from 'chalk'
 
 import { getLogger } from './logger.mjs';
 import './extensions/String+Path.mjs';
@@ -10,6 +12,13 @@ import { AttachmentFolderPolicy, calculateAttachmentFolderPath } from './migrati
 
 
 const logger = getLogger();
+
+const progressBar = new cliProgress.SingleBar({
+  format: `${chalk.green('{bar}')} | ${chalk.hex('#00BFFF')('{percentage}%')} || ${chalk.yellow('{value}/{total}')} Notebooks || Duration: ${chalk.cyan('{duration_formatted}')}`,
+  barCompleteChar: '\u2588',   // completely filled rectangle
+  barIncompleteChar: '\u2591', // thin rectangle
+  hideCursor: true
+}, cliProgress.Presets.shades_classic);
 
 const Keys = {
   children: 'children',
@@ -21,7 +30,7 @@ export function exportQvlibrary(qvlibrary: string, outputPath: string, attachmen
   const glob = pathModule.join(qvlibrary, '*.qvnotebook')
   const quiverNoteBooks = fg.sync(glob, { onlyDirectories: true })
 
-  logger.info('==> retrieving the qvnotebooks info under the qvlibrary.');
+  logger.forceInfo('==> retrieving the qvnotebooks info under the qvlibrary.');
   const notebookPathsByUUID = quiverNoteBooks.reduce((acc: Map<string, string>, path: string): Map<string, string> => {
     const fileName = path.lastPathComponent();
     const uuid = fileName.split('.')[0];
@@ -30,23 +39,56 @@ export function exportQvlibrary(qvlibrary: string, outputPath: string, attachmen
 
   logger.debugNotebookPathsByUUID(notebookPathsByUUID)
 
-  logger.info(`==> processing the default fixed notebooks 'Inbox' and 'Trash' in Quiver.`);
+  logger.forceInfo(`==> processing the default fixed notebooks 'Inbox' and 'Trash' in Quiver.`);
   ['Inbox', 'Trash'].forEach((fixedName: string) => {
     const notebookPath = notebookPathsByUUID.get(fixedName);
     convertNotebook(notebookPath, outputPath, [fixedName], attachmentFolderPolicy);
   });
 
-  logger.info('==> retrieving the root meta.json, which stores the tree structure.');
+  logger.forceInfo('==> retrieving the root meta.json, which stores the tree structure.');
   const treeMetaPath = pathModule.join(qvlibrary, 'meta.json');
   const treeMetaText = fs.readFileSync(treeMetaPath, 'utf8').toString();
   const treeMeta = JSON.parse(treeMetaText);
 
-  logger.info('==> traverse the folder tree structure to convert Quiver notebooks into Obsidian .md files.');
+  const totalFileCount = totalNumberOfFile(treeMeta, notebookPathsByUUID);
+  logger.info(`totalFileCount=${totalFileCount}`);
+
+  logger.forceInfo('==> traversing the folder tree structure to convert Quiver notebooks into Obsidian .md files.');
+  progressBar.start(totalFileCount, 0);
   const rootChildren = treeMeta[Keys.children];
   traverseFolderTree(rootChildren, 0, [], outputPath, notebookPathsByUUID, attachmentFolderPolicy);
 
   logger.info('==> Traversal of the folder tree structure has been completed.');
-  logger.completed()
+  progressBar.stop();
+  logger.completed();
+}
+
+function totalNumberOfFile(treeMeta: any, notebooksByUUID: Map<string, string>): number {
+
+  const rootChildren = treeMeta[Keys.children];
+
+  return traverse(rootChildren, notebooksByUUID, 0);
+
+  function traverse(children: [], notebooksByUUID: Map<string, string>, fileCount: number): number {
+
+    if (children === undefined) { return fileCount; }
+
+    children.forEach((node) => {
+
+      const uuid = node['uuid'];
+  
+      const notebookPath = notebooksByUUID.get(uuid);
+      if (notebookPath === undefined) {
+        return;
+      }
+
+      fileCount++;
+      const notebookMeta = JSON.parse(fs.readFileSync(pathModule.join(notebookPath, 'meta.json'), 'utf8'));
+      fileCount = traverse(node[Keys.children], notebooksByUUID, fileCount);
+    })
+  
+    return fileCount;
+  }
 }
 
 function traverseFolderTree(children: [], depth: number, pathStack: string[], outputPath: string, notebooksByUUID: Map<string, string>, attachmentFolderPolicy: AttachmentFolderPolicy) {
@@ -68,6 +110,7 @@ function traverseFolderTree(children: [], depth: number, pathStack: string[], ou
     const notebookMeta = JSON.parse(fs.readFileSync(pathModule.join(notebookPath, 'meta.json'), 'utf8'));
 
     pathStack.push(notebookMeta.name);
+    progressBar.increment();
     convertNotebook(notebookPath, outputPath, pathStack, attachmentFolderPolicy);
     traverseFolderTree(node[Keys.children], depth + 1, pathStack, outputPath, notebooksByUUID, attachmentFolderPolicy);
     pathStack.pop();

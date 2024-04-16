@@ -24,8 +24,12 @@ const createLogger = (config: LogConfig) => {
   return {
 
     error: (message: string) => console.error(message),
+    forceInfo: (message: string) => console.info(message),
 
-    info: (message: string) => console.info(message),
+    info: (message: string) => {
+      if (!config.isVerbose) return;
+      console.info(message)
+    },
 
     debug: (message: string) => {
       if (!config.isVerbose) return;
@@ -39,7 +43,7 @@ const createLogger = (config: LogConfig) => {
 
     completed: () => {
       console.info('')
-      console.info("🎉 the export of the Quiver library to the Obsidian Vault has been completed successfully.")
+      console.info("🎉 The export of the Quiver library to the Obsidian Vault has been completed successfully.")
     },
   };
 };
