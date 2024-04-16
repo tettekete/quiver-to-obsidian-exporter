@@ -23,7 +23,7 @@ Options
 
 Examples
   $ qvr2obs MyNote.qvlibrary -o dest/MyNote -a vaultFolder
-  $ qvr2obs MyNote.qvlibrary -o dest/MyNote -a subfolderUnderVault -n _attachment
+  $ qvr2obs MyNote.qvlibrary -o dest/MyNote -a subfolderUnderVault -n _attachments
 `
 
 

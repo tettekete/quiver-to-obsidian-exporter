@@ -37,7 +37,7 @@ Options
 
 Examples
   $ qvr2obs MyNote.qvlibrary -o dest/MyNote -a vaultFolder
-  $ qvr2obs MyNote.qvlibrary -o dest/MyNote -a subfolderUnderVault -n _attachment
+  $ qvr2obs MyNote.qvlibrary -o dest/MyNote -a subfolderUnderVault -n _attachments
 ```
 
 
@@ -84,7 +84,7 @@ Examples
 6.	Execute the command:
 	e.g.
 	```
-	qvr2obs testdata/source/MyNote.qvlibrary -o testdata/destination/MyNote -a subfolderUnderVault -n _quiver-attachments
+	qvr2obs testdata/source/MyNote.qvlibrary -o testdata/destination/MyNote -a subfolderUnderVault -n _attachments
 	```
 
 If needed, enable verbose logging for debugging:
