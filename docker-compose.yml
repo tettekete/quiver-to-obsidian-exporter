@@ -1,0 +1,9 @@
+services:
+  app:
+    image: quiver-to-obsidian-exporter
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./testdata:/app/testdata
+    command: tail -f /dev/null
