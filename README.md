@@ -2,23 +2,22 @@
 
 ![npm](https://img.shields.io/npm/v/quiver-to-obsidian-exporter)
 
-The original repository can be found 
-[here](https://github.com/Yukaii/quiver-markdown-exporter)
-This command line tool is built upon the excellent foundation of the original repository.
-Thank you!
+The original repository can be found  [here](https://github.com/Yukaii/quiver-markdown-exporter)  
+This command line tool is built upon the excellent foundation of the original repository.  
+Thank you!  
 
 ---
 
-This tool facilitates migration from Quiver to Obsidian.
- I've enhanced its features and corrected several bugs, as the original functionality did not fully meet my needs. 
- 
- Please note that both the repository name and the command name have been changed for clarity.
+This tool facilitates migration from Quiver to Obsidian.  
+I've enhanced its features and corrected several bugs, as the original functionality did not fully meet my needs.  
+
+Please note that both the repository name and the command name have been changed for clarity.  
 
 ![App Concept Image](app-concept-image.png)
 ![App Running Image](app-running.png)
 
-[Quiver](https://yliansoft.com/)
-[Obsidian](https://obsidian.md/)
+* [Quiver](https://yliansoft.com/)
+* [Obsidian](https://obsidian.md/)
 
 
 ## Installation
@@ -76,8 +75,8 @@ Examples
 
 ## How to Test (For Developers)
 
-This testing procedure is designed for testing in a clean environment.
-For routine testing, feel free to use your IDE of choice.
+This testing procedure is designed for testing in a clean environment.  
+For routine testing, feel free to use your IDE of choice.  
 
 1. Prepare the `testdata` folder:
     In the testdata folder, place xxx.qvlibrary in the sources directory, for example, and also provide a destination folder, etc. and use it as the location for the -o option (-o testdata/destination/MyNote)
