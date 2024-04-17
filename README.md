@@ -14,6 +14,9 @@ This tool facilitates migration from Quiver to Obsidian.
  
  Please note that both the repository name and the command name have been changed for clarity.
 
+![App Concept Image](app-concept-image.png)
+![App Running Image](app-running.png)
+
 [Quiver](https://yliansoft.com/)
 [Obsidian](https://obsidian.md/)
 
