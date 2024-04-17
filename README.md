@@ -4,6 +4,8 @@
 
 The original repository can be found 
 [here](https://github.com/Yukaii/quiver-markdown-exporter)
+This command line tool is built upon the excellent foundation of the original repository.
+Thank you!
 
 ---
 
