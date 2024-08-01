@@ -48,7 +48,11 @@ ${transformedContent}
 
 function makeYamlFrontMatter(tags: string, quiverMeta: any): string {
 
+  let _title = quiverMeta.title;
+  _title.replaceAll(/'/g,"''"); // escape single quotes for YAML value
+
   return `---
+title: '${_title}'
 tags:
 ${tags}
 origin: Quiver
