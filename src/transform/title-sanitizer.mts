@@ -6,11 +6,19 @@
  * Removes or replaces characters that are not allowed in Obsidian titles.
  * The following characters are not allowed in Obsidian titles:
  * `/`, `:`, `\`, `#`, `^`, `[`, `]`, `|`
+ * and begin with `.`
+ * 
+ * If the title is empty, "__empty_title__" is set as a provisional name.
  * 
  * @param title The original title string to be sanitized.
  * @returns The sanitized title string.
  */
 export function sanitizeTitle(title: string): string {
+
+  if( ! title.length )
+  {
+    title = '__empty_title__';
+  }
 
   return [
     [/\//g, "／"],
@@ -21,6 +29,7 @@ export function sanitizeTitle(title: string): string {
     [/\[/g, "［"],
     [/]/g, "］"],
     [/\|/g, "｜"],
+    [/^\./,"．"]
   ].reduce((title: string, pair: [RegExp, string]): string => {
     return title.replace(pair[0], pair[1]);
   }, sanitizeTime(sanitizeDate(title)));
