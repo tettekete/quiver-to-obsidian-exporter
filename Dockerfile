@@ -1,6 +1,7 @@
 FROM node:latest
 
-ENV SUT=quiver-to-obsidian-exporter-1.1.0.tgz
+ENV SUT=tettekete-quiver-to-obsidian-exporter-1.1.1.tgz
+USER root
 
 RUN apt-get update && apt-get install -y \
     less \

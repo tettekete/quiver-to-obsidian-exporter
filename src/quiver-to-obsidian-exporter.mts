@@ -9,7 +9,7 @@ import './extensions/String+Path.mjs';
 import { transformQuiverNoteToObsidian } from './quiver-to-obsidian-transform.mjs'
 import { cloneTimestamp } from './migration-support/file-timestamp-cloner.mjs';
 import { AttachmentFolderPolicy, calculateAttachmentFolderPath } from './migration-support/attachment-folder-treatment.mjs'
-
+import { nonDuplicateMDPath } from './migration-support/duplicate-md-file-handler.mjs'
 
 const logger = getLogger();
 
@@ -24,6 +24,7 @@ const Keys = {
   children: 'children',
 } as const;
 
+let _noteCounter = 0;
 
 export function exportQvlibrary(qvlibrary: string, outputPath: string, attachmentFolderPolicy: AttachmentFolderPolicy) {
 
@@ -60,6 +61,7 @@ export function exportQvlibrary(qvlibrary: string, outputPath: string, attachmen
 
   logger.info('==> Traversal of the folder tree structure has been completed.');
   progressBar.stop();
+  logger.forceInfo(`Number of notes processed: ${_noteCounter}`);
   logger.completed();
 }
 
@@ -122,6 +124,8 @@ export function convertNotebook(quiverNotebook: string, outputPath: string, path
   const glob = pathModule.join(quiverNotebook, '*.qvnote')
   const quiverNotePaths = fg.sync(glob, { onlyDirectories: true })
 
+  _noteCounter += quiverNotePaths.length
+
   const obsidianNoteDirPath = pathModule.join(outputPath, ...pathStack)
   const obsidianAttachmentFolderPath = calculateAttachmentFolderPath(outputPath, obsidianNoteDirPath, attachmentFolderPolicy)
 
@@ -139,7 +143,7 @@ function outputNoteAndCopyResources(srcInfo: any, destInfo: any) {
   fs.ensureDirSync(obsidianNoteDirPath)
   fs.ensureDirSync(obsidianAttachmentFolderPath)
   
-  const destFilePath = pathModule.join(obsidianNoteDirPath, `${title}.md`)
+  const destFilePath = nonDuplicateMDPath( obsidianNoteDirPath , title )  
 
   try {
     fs.writeFileSync(destFilePath, content)

@@ -4,6 +4,9 @@ services:
     build: 
       context: .
       dockerfile: Dockerfile
+    tty: true
     volumes:
       - ./testdata:/app/testdata
     command: tail -f /dev/null
+    environment:
+      QUIVER_TO_OBSIDIAN_EXPORTER_LOGGING_VERBOSE: false
