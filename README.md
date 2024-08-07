@@ -1,17 +1,17 @@
 # Export Quiver library to Obsidian markdown files
 
-![npm](https://img.shields.io/npm/v/quiver-to-obsidian-exporter)
+![npm](https://img.shields.io/npm/v/@tettekete/quiver-to-obsidian-exporter)
 
-The original repository can be found  [here](https://github.com/Yukaii/quiver-markdown-exporter)  
+The original forked repository is ["blue-monk/quiver-to-obsidian-exporter"]( https://github.com/blue-monk/quiver-to-obsidian-exporter), and furthermore the original repository is ["Yukaii/quiver-markdown-exporter"](https://github.com/Yukaii/quiver-markdown-exporter).
+
 This command line tool is built upon the excellent foundation of the original repository.  
 Thank you!  
 
 ---
 
 This tool facilitates migration from Quiver to Obsidian.  
-I've enhanced its features and corrected several bugs, as the original functionality did not fully meet my needs.  
 
-Please note that both the repository name and the command name have been changed for clarity.  
+I made some changes because there were a few points that concerned me when using it (mainly that the number of notes in Quiver didn't match the number of exported markdown files).
 
 ![App Concept Image](app-concept-image.png)
 ![App Running Image](app-running.png)
@@ -23,7 +23,7 @@ Please note that both the repository name and the command name have been changed
 ## Installation
 
 ```bash
-npm install -g quiver-to-obsidian-exporter
+npm install -g @tettekete/quiver-to-obsidian-exporter
 ```
 
 ## Usage
@@ -47,30 +47,21 @@ Examples
 
 ## Changes from the Original
 
-### New Features
+- Fixed a problem that caused notes with titles beginning with `.` to become hidden files in Obsidian.
 
-* Output maintains the tree structure of the Quiver library (originally output was flat).
-* Added support for all four Obsidian attachment folder policies.
-* Converts tags, creation and modification times of notebooks into YAML front matter.
-* Migrates Quiver notebooks while preserving their timestamps.
-* Added a progress bar to display the transformation progress from Quiver to Obsidian.
+- Set `__empty_title__` as a provisional name for a note with an empty title.
 
-### Bug Fixes
+- Fixed duplicate title notes to end with `-dup` + number.
 
-* Fixed an issue where image links in Markdown cells were not rendering in Obsidian.
-* Sanitized characters in titles that are not allowed in Obsidian.
-* Fixed LaTeX rendering issues to ensure correct display in Obsidian.
+- Changed the Properties information assigned to Obsidian content to include `title` information (to avoid the problem of losing the original title due to file name sanitization, making it impossible to search for the original title).
+	
+	See also ["Properties - Obsidian Help"](https://help.obsidian.md/Editing+and+formatting/Properties)
 
-### Minor Changes
+- The number of notes processed is now displayed as information when the export is complete.
 
-* Changed the timestamp formatter to `YYYY-MM-DD(ddd) HH:mm:ss`.
-* Added a check for the existence of the qvlibrary file.
-* Displays help text when executed without arguments.
+	This is so that you can check if the number of notes matches the number of notes displayed in your Quiver(Trash + All Notes).
 
-### For Developers
-
-* Added debug logging (controlled by the environment variable QUIVER_TO_OBSIDIAN_EXPORTER_LOGGING_VERBOSE).
-* Created a Docker environment dedicated to testing.
+	You can also check the number of Markdown files actually exported with commands such as `find testdata/exported -name "*.md" | wc -l`. 
 
 
 ## How to Test (For Developers)
@@ -86,7 +77,7 @@ For routine testing, feel free to use your IDE of choice.
 5. Enter the Docker container: 
    e.g.
     ```
-    docker exec -it quiver-to-obsidian-exporter-app-1 /bin/bash
+    docker compose exec app /bin/bash
 	```
 6.	Execute the command:
 	e.g.
@@ -98,7 +89,14 @@ If needed, enable verbose logging for debugging:
 ```
 export QUIVER_TO_OBSIDIAN_EXPORTER_LOGGING_VERBOSE=true
 ```
+This may be set as the value of `QUIVER_TO_OBSIDIAN_EXPORTER_LOGGING_VERBOSE` in `docker-compose.yml`.
 
+
+Alternatively, you can run the following command after `docker compose up -d --build` without entering the Docker container.
+
+```sh
+docker compose exec app qvr2obs testdata/source/MyNote.qvlibrary -o testdata/destination/MyNote -a subfolderUnderVault -n _attachments
+```
 
 ## Contributing
 
